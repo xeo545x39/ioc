@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 namespace Xeo.Ioc.Showcase
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    sealed class Dependency : Attribute
+    sealed class DependencyAttribute : Attribute
     {
         public IEnvironment Environment { get; }
         
-        public Dependency(Type environmentType)
+        public DependencyAttribute(Type environmentType)
         {
             if (environmentType == null)
             { 
@@ -60,9 +60,9 @@ namespace Xeo.Ioc.Showcase
             IInvoiceProcessor invoiceProcessor = new ProductionInvoiceProcessor();
 
             if (invoiceProcessor.GetType()
-                    .GetCustomAttribute<Dependency>()
-                    .Environment !=
-                environment)
+                    .GetCustomAttribute<DependencyAttribute>()
+                    .Environment
+                != environment)
             {
                 throw new Exception("Invalid dependency for current environment.");
             }
