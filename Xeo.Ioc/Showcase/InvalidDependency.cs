@@ -17,8 +17,8 @@ namespace Xeo.Ioc.Showcase
             { 
                 throw new ArgumentNullException(nameof(environmentType));   
             }
-            
-            Environment = (IEnvironment)Activator.CreateInstance(environmentType);
+
+            Environment = Environments.Get(environmentType);
         }
     }
 
