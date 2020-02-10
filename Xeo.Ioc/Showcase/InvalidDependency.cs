@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Xeo.Ioc.Showcase
 {
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    sealed class DependencyAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    internal sealed class DependencyAttribute : Attribute
     {
-        public IEnvironment Environment { get; }
-        
         public DependencyAttribute(Type environmentType)
         {
             if (environmentType == null)
-            { 
-                throw new ArgumentNullException(nameof(environmentType));   
+            {
+                throw new ArgumentNullException(nameof(environmentType));
             }
 
             Environment = Environments.Get(environmentType);
         }
+
+        public IEnvironment Environment { get; }
     }
 
     public static class Environments
@@ -28,7 +26,7 @@ namespace Xeo.Ioc.Showcase
         public static IEnvironment Production { get; } = new ProductionEnvironment();
 
         public static IEnvironment Get(Type environmentType)
-            => (IEnvironment)typeof(Environments)
+            => (IEnvironment) typeof(Environments)
                 .GetProperties(BindingFlags.Static | BindingFlags.Public)
                 .Where(x => x.PropertyType == typeof(IEnvironment))
                 .Single(x => x
@@ -41,14 +39,15 @@ namespace Xeo.Ioc.Showcase
     public interface IEnvironment { }
 
     public class DevelopmentEnvironment : IEnvironment { }
+
     public class ProductionEnvironment : IEnvironment { }
 
     public interface IInvoiceProcessor { }
-    
-    [Showcase.Dependency(typeof(ProductionEnvironment))]
+
+    [Dependency(typeof(ProductionEnvironment))]
     public class ProductionInvoiceProcessor : IInvoiceProcessor { }
 
-    [Showcase.Dependency(typeof(DevelopmentEnvironment))]
+    [Dependency(typeof(DevelopmentEnvironment))]
     public class DevelopmentInvoiceProcessor : IInvoiceProcessor { }
 
     public class SomewhereInTheCode
@@ -56,13 +55,13 @@ namespace Xeo.Ioc.Showcase
         public void Method()
         {
             IEnvironment environment = new DevelopmentEnvironment();
-            
+
             IInvoiceProcessor invoiceProcessor = new ProductionInvoiceProcessor();
 
             if (invoiceProcessor.GetType()
                     .GetCustomAttribute<DependencyAttribute>()
-                    .Environment
-                != environment)
+                    .Environment !=
+                environment)
             {
                 throw new Exception("Invalid dependency for current environment.");
             }
